@@ -1,0 +1,43 @@
+/* reads in the csv file*/
+proc import datafile = '/home/jleath0/6371_Stats/EducationData.csv'
+ out = ed_data
+ dbms = CSV
+ ;
+run;
+/* the basic Univariate function*/
+proc univariate data=ed_data;
+class Educ;
+var Income2005;
+/*Histogram and QQ Plot*/
+histogram;
+qqplot;
+run;
+/* calc the mean */
+proc means data = ed_data;
+class Educ;
+var Income2005;
+run;
+/* had to sort the data to get the boxplot to run*/
+proc sort data=ed_data;
+by Educ;
+/*box plot function*/
+proc boxplot data=ed_data;
+PLOT (Income2005)*Educ;
+run;
+/*t-test on the data set/income*/
+proc ttest data = ed_data;
+class Educ;
+var Income2005;
+run;
+/* Transformation of the Data */
+data led_data;
+set ed_data;
+/* the log function on the income variable */
+logIncome2005 = log(Income2005);
+run;
+
+/* the t-test on the transformed data */
+proc ttest data = led_data;
+class Educ;
+var logIncome2005;
+run;
