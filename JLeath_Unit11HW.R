@@ -8,7 +8,7 @@ library(readr)
 library(ggplot2)
 
 # read in data
-autism <- read_csv("Autism.csv")
+autism <- read_csv("Autism2.csv")
   cols(
     Child = col_integer(),
     Before = col_integer(),
@@ -22,23 +22,36 @@ str(autism)
 View(autism)
 
 #Linear Regression
-autismlm <- lm(After~Before, data = autism)
+model1 <- lm(Prev~Year, data = autism)
 
-newx=autism$After
+#Basic plot
+plot(Prev ~ Year, data = autism)
+abline(model1)
 
+#Scatter Plot with CI
+ggplot(autism, aes(x = Year, y = Prev)) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red")
+newx=autism$Year
 newx=sort(newx)
-
-prd_c=predict(autismlm, newdata = data.frame(Before=newx),
+prd_c=predict(model1, newdata = data.frame(Year=newx),
               interval=c("confidence"),type=c("response"),
               level=.95)
 prd_c
 
 #summary of model
-summary(autismlm)
+summary(model1)
 
+#i.	A scatterplot with the following included on the graph: 
+#   regression line, confidence intervals of the regression line,
+#   and prediction intervals of the regression line.
 
-# Residual Plot, sourced from a peer.
-model1=lm(After~Before, data = autism)
+p2a <- ggplot(autism,aes(Year,Prev)) +
+  geom_smooth(method='lm',formula=autism$Prev~autism$Year)
+p2a
+
+# Scatterplot of the residuals
+
 resp<-ggplot(model1, aes(.fitted, .resid))+
   geom_point(aes(color = .resid)) +
   scale_color_gradient2(low = "blue",
